@@ -1,19 +1,14 @@
 const characters = document.getElementById("characters");
 const serchBar = document.getElementById("searchBar");
-let pokemon = [];
+let character = [];
 
 serchBar.addEventListener("keyup", (e) => {
   const searchString = e.target.value;
-  const filteredCharacters = pokemon.filter((character) => {
-    return (
-      character.name.includes(searchString) ||
-      character.status.includes(searchString)
-    );
+  const filteredCharacters = character.filter((character) => {
+    return character.name.toLowerCase().includes(searchString);
   });
-  displayPokemon(filteredCharacters);
+  displayCharacters(filteredCharacters);
 });
-
-console.log(characters);
 
 const fetchCharacters = (data) => {
   const promises = [];
@@ -23,7 +18,7 @@ const fetchCharacters = (data) => {
     promises.push(fetch(url).then((res) => res.json()));
   }
   Promise.all(promises).then((results) => {
-    pokemon = results.map((data) => ({
+    character = results.map((data) => ({
       name: data.name,
       status: data.status,
       image: data.image,
@@ -31,25 +26,24 @@ const fetchCharacters = (data) => {
       species: data.species,
       origin: data.origin.name,
     }));
-    displayPokemon(pokemon);
+    displayCharacters(character);
   });
 };
 
-const displayPokemon = (pokemon) => {
-  console.log(pokemon);
-  const pokemonHTMLString = pokemon
+const displayCharacters = (character) => {
+  const characterHTMLString = character
     .map(
-      (pokeman) => `
+      (data) => `
       <li class="card">
-          <img class="card-image" src="${pokeman.image}"/>
-          <h2 class="card-title">${pokeman.name}. ${pokeman.status}</h2>
-          <p class="card-subtitle">Type: ${pokeman.species}</p>
-          <p class="card-subtitle">Gender: ${pokeman.gender}</p>
-          <p class="card-subtitle">Location: ${pokeman.origin}</p>
+          <img class="card-image" src="${data.image}"/>
+          <h2 class="card-title">${data.name}. ${data.status}</h2>
+          <p class="card-subtitle">Type: ${data.species}</p>
+          <p class="card-subtitle">Gender: ${data.gender}</p>
+          <p class="card-subtitle">Location: ${data.origin}</p>
       </li>
   `
     )
     .join("");
-  characters.innerHTML = pokemonHTMLString;
+  characters.innerHTML = characterHTMLString;
 };
 fetchCharacters();
